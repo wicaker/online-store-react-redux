@@ -1,34 +1,67 @@
 import { STATE_LOGIN, STATE_SIGNUP } from 'components/AuthForm';
 import GAListener from 'components/GAListener';
 import { EmptyLayout, LayoutRoute, MainLayout } from 'components/Layout';
-import AlertPage from 'pages/AlertPage';
-import AuthModalPage from 'pages/AuthModalPage';
-import AuthPage from 'pages/AuthPage';
-import BadgePage from 'pages/BadgePage';
-import ButtonGroupPage from 'pages/ButtonGroupPage';
-import ButtonPage from 'pages/ButtonPage';
-import CardPage from 'pages/CardPage';
-import ChartPage from 'pages/ChartPage';
+
 // pages
 import DashboardPage from 'pages/DashboardPage';
-import DropdownPage from 'pages/DropdownPage';
-import FormPage from 'pages/FormPage';
-import InputGroupPage from 'pages/InputGroupPage';
-import ModalPage from 'pages/ModalPage';
-import ProgressPage from 'pages/ProgressPage';
-import TablePage from 'pages/TablePage';
-import TypographyPage from 'pages/TypographyPage';
-import WidgetPage from 'pages/WidgetPage';
+import PlaystationPage from 'pages/PlaystationPage';
+import TabletPage from 'pages/TabletPage';
+import NintendoPage from 'pages/NintendoPage';
+import HandphonePage from 'pages/HandphonePage';
+import AuthPage from 'pages/AuthPage';
+import MacBookPage from 'pages/MacBookPage';
+import LaptopConsumerPage from 'pages/LaptopConsumerPage';
+import LaptopGamingPage from 'pages/LaptopGamingPage';
+import UltraBookPage from 'pages/UltraBookPage';
+import DetailProductPage from './pages/DetailsProductPage';
+import ListBookingsPage from './pages/customer/ListBookingsPage';
+import PurchaseStatusPage from './pages/customer/PurchaseStatusPage';
+import PurchasePage from './pages/customer/PurchasePage';
+
+import AddProductPage from './pages/administrator/AddProductPage';
+import SummaryPage from './pages/administrator/SummaryPage';
+import AdminProductsPage from './pages/administrator/AdminProductsPage';
+
+
+
 import React from 'react';
 import componentQueries from 'react-component-queries';
 import { BrowserRouter, Redirect, Switch } from 'react-router-dom';
 import './styles/reduction.css';
 
+//auth
+import jwt_decode from "jwt-decode";
+import setAuthToken from "./utils/setAuthToken";
+import { setCurrentUser, logoutUser } from "./store/actions/authActions";
+import store from "./store/store";
+
+// Check for token
+if (localStorage.jwtToken) {
+  // Set auth token header auth
+  setAuthToken(localStorage.jwtToken);
+  // Decode token and get user info and exp
+  const decoded = jwt_decode(localStorage.jwtToken);
+  // Set user and isAuthenticated
+  store.dispatch(setCurrentUser(decoded));
+
+  // Check for expired token
+  const currentTime = Date.now() / 1000;
+  if (decoded.exp < currentTime) {
+    // Logout user
+    store.dispatch(logoutUser());
+    // TODO: Clear current Profile
+
+    // // Redirect to login
+    // this.props.router.push('/login');
+  }
+  // console.log(decoded.exp, currentTime);
+}
+
 const getBasename = () => {
   return `/${process.env.PUBLIC_URL.split('/').pop()}`;
 };
 
-class App extends React.Component {
+class App extends React.Component { 
   render() {
     return (
       <BrowserRouter basename={getBasename()}>
@@ -52,106 +85,108 @@ class App extends React.Component {
             />
             <LayoutRoute
               exact
-              path="/login-modal"
-              layout={MainLayout}
-              component={AuthModalPage}
-            />
-            <LayoutRoute
-              exact
               path="/"
               layout={MainLayout}
               component={DashboardPage}
             />
             <LayoutRoute
               exact
-              path="/buttons"
+              path="/playstation"
               layout={MainLayout}
-              component={ButtonPage}
+              component={PlaystationPage}
             />
             <LayoutRoute
               exact
-              path="/cards"
+              path="/nintendo"
               layout={MainLayout}
-              component={CardPage}
+              component={NintendoPage}
             />
             <LayoutRoute
               exact
-              path="/widgets"
+              path="/handphone"
               layout={MainLayout}
-              component={WidgetPage}
+              component={HandphonePage}
             />
             <LayoutRoute
               exact
-              path="/typography"
+              path="/tablet"
               layout={MainLayout}
-              component={TypographyPage}
+              component={TabletPage}
             />
             <LayoutRoute
               exact
-              path="/alerts"
+              path="/laptopconsumer"
               layout={MainLayout}
-              component={AlertPage}
+              component={LaptopConsumerPage}
             />
             <LayoutRoute
               exact
-              path="/tables"
+              path="/laptopgaming"
               layout={MainLayout}
-              component={TablePage}
+              component={LaptopGamingPage}
             />
             <LayoutRoute
               exact
-              path="/badges"
+              path="/macbook"
               layout={MainLayout}
-              component={BadgePage}
+              component={MacBookPage}
             />
             <LayoutRoute
               exact
-              path="/button-groups"
+              path="/ultrabook"
               layout={MainLayout}
-              component={ButtonGroupPage}
+              component={UltraBookPage}
             />
             <LayoutRoute
               exact
-              path="/dropdowns"
+              path="/detail/:id"
               layout={MainLayout}
-              component={DropdownPage}
+              component={DetailProductPage}
             />
             <LayoutRoute
               exact
-              path="/progress"
+              path="/listbookings"
               layout={MainLayout}
-              component={ProgressPage}
+              component={ListBookingsPage}
             />
             <LayoutRoute
               exact
-              path="/modals"
+              path="/purchase/:id"
               layout={MainLayout}
-              component={ModalPage}
+              component={PurchasePage}
             />
             <LayoutRoute
               exact
-              path="/forms"
+              path="/purchasestatus"
               layout={MainLayout}
-              component={FormPage}
+              component={PurchaseStatusPage}
+            />SummaryPage
+
+            <LayoutRoute
+              exact
+              path="/summary"
+              layout={MainLayout}
+              component={SummaryPage}
             />
             <LayoutRoute
               exact
-              path="/input-groups"
+              path="/addproduct"
               layout={MainLayout}
-              component={InputGroupPage}
+              component={AddProductPage}
             />
             <LayoutRoute
               exact
-              path="/charts"
+              path="/adminproducts"
               layout={MainLayout}
-              component={ChartPage}
+              component={AdminProductsPage}
             />
-            <LayoutRoute
+            
+            {/* <LayoutRoute
               exact
               path="/register"
               layout={MainLayout}
               component={AuthPage}
-            />
+            /> */}
             <Redirect to="/" />
           </Switch>
         </GAListener>

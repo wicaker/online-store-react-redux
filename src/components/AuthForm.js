@@ -2,8 +2,20 @@ import logo200Image from 'assets/img/logo/logo_200.png';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Button, Form, FormGroup, Input, Label } from 'reactstrap';
+import { Redirect } from 'react-router-dom';
+
+import { connect } from "react-redux";
+import * as actionCreators from "../store/actions/authActions"; //connect to authActions
+
 
 class AuthForm extends React.Component {
+  state = {
+    name: "",
+    email: "",
+    status: "" || "customer",
+    password: ""
+  };
+
   get isLogin() {
     return this.props.authState === STATE_LOGIN;
   }
@@ -20,7 +32,39 @@ class AuthForm extends React.Component {
 
   handleSubmit = event => {
     event.preventDefault();
+    if(this.props.authState === STATE_SIGNUP){
+      const requestBody = {
+        query: `
+          mutation {
+            createUser(userInput:{name: "${this.state.name}", email: "${this.state.email}", password: "${this.state.password}", status: "${this.state.status}"}){
+              _id
+              name
+            }
+          }
+        `
+      }; 
+      this.props.registerUser(requestBody);
+      this.props.onChangeAuthState(STATE_LOGIN);
+    }
+    else if(this.props.authState === STATE_LOGIN){
+      const requestBody = {
+        query: `
+          query {
+            login(email: "${this.state.email}", password: "${this.state.password}"){
+              token
+            }
+          }
+        `
+      }; 
+      this.props.loginUser(requestBody);
+    }
   };
+
+  handleChange = e => {
+    this.setState({
+      [e.target.id] : e.target.value
+    })
+  }
 
   renderButtonText() {
     const { buttonText } = this.props;
@@ -37,14 +81,15 @@ class AuthForm extends React.Component {
   }
 
   render() {
+    if(this.props.auth.isAuthenticated) return <Redirect to='/' />
     const {
       showLogo,
-      usernameLabel,
-      usernameInputProps,
-      passwordLabel,
-      passwordInputProps,
-      confirmPasswordLabel,
-      confirmPasswordInputProps,
+      // usernameLabel,
+      // usernameInputProps,
+      // passwordLabel,
+      // passwordInputProps,
+      // nameLabel,
+      // nameInputProps,
       children,
       onLogoClick,
     } = this.props;
@@ -62,18 +107,27 @@ class AuthForm extends React.Component {
             />
           </div>
         )}
+        {this.isSignup && (
+          <FormGroup>
+            <Label>Name</Label>
+            <Input placeholder='input name' id='name' onChange ={this.handleChange} type='text'/>
+          </FormGroup>
+        )}
         <FormGroup>
-          <Label for={usernameLabel}>{usernameLabel}</Label>
-          <Input {...usernameInputProps} />
+          <Label >Email</Label>
+          <Input placeholder='input email' id='email' onChange ={this.handleChange} type='email'/>
         </FormGroup>
         <FormGroup>
-          <Label for={passwordLabel}>{passwordLabel}</Label>
-          <Input {...passwordInputProps} />
+          <Label >Password</Label>
+          <Input placeholder='input password' id='password' onChange ={this.handleChange} type='password'/>
         </FormGroup>
         {this.isSignup && (
           <FormGroup>
-            <Label for={confirmPasswordLabel}>{confirmPasswordLabel}</Label>
-            <Input {...confirmPasswordInputProps} />
+            <Label>Status</Label>
+            <Input type="select" id="status" onChange ={this.handleChange} value={this.value}>
+              <option value="customer">customer</option>
+              <option value="administrator">administrator</option>
+            </Input>
           </FormGroup>
         )}
         <FormGroup check>
@@ -118,34 +172,55 @@ export const STATE_SIGNUP = 'SIGNUP';
 AuthForm.propTypes = {
   authState: PropTypes.oneOf([STATE_LOGIN, STATE_SIGNUP]).isRequired,
   showLogo: PropTypes.bool,
-  usernameLabel: PropTypes.string,
-  usernameInputProps: PropTypes.object,
-  passwordLabel: PropTypes.string,
-  passwordInputProps: PropTypes.object,
-  confirmPasswordLabel: PropTypes.string,
-  confirmPasswordInputProps: PropTypes.object,
+  // usernameLabel: PropTypes.string,
+  // usernameInputProps: PropTypes.object,
+  // passwordLabel: PropTypes.string,
+  // passwordInputProps: PropTypes.object,
+  // confirmPasswordLabel: PropTypes.string,
+  // confirmPasswordInputProps: PropTypes.object,
   onLogoClick: PropTypes.func,
 };
 
 AuthForm.defaultProps = {
   authState: 'LOGIN',
   showLogo: true,
-  usernameLabel: 'Email',
-  usernameInputProps: {
-    type: 'email',
-    placeholder: 'your@email.com',
-  },
-  passwordLabel: 'Password',
-  passwordInputProps: {
-    type: 'password',
-    placeholder: 'your password',
-  },
-  confirmPasswordLabel: 'Confirm Password',
-  confirmPasswordInputProps: {
-    type: 'password',
-    placeholder: 'confirm your password',
-  },
+  // usernameLabel: 'Email',
+  // usernameInputProps: {
+  //   type: 'email',
+  //   placeholder: 'your@email.com',
+  // },
+  // passwordLabel: 'Password',
+  // passwordInputProps: {
+  //   type: 'password',
+  //   placeholder: 'your password',
+  // },
+  // confirmPasswordLabel: 'Confirm Password',
+  // confirmPasswordInputProps: {
+  //   type: 'password',
+  //   placeholder: 'confirm your password',
+  // },
+  // nameLabel: 'Name',
+  // nameInputProps: {
+  //   type: 'text',
+  //   placeholder: 'Add your name',
+  //   defaultValue:'Wicak'
+  // },
+  // // statusLabel: 'Confirm Password',
+  // // statusInputProps: {
+  // //   type: 'password',
+  // //   placeholder: 'confirm your password',
+  // // },
   onLogoClick: () => {},
 };
 
-export default AuthForm;
+// export default AuthForm;
+
+//connect redux store to component
+const mapStateToProps = state => {
+  return state;
+};
+
+export default connect(
+  mapStateToProps,
+  actionCreators
+)(AuthForm);
