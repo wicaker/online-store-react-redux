@@ -1,6 +1,5 @@
 import React from "react";
 import PaypalExpressBtn from "react-paypal-express-checkout";
-import { paypalAccount } from "../../config/paypal";
 import { axiosInstance } from "../../config/api";
 
 export default class PaypalPayment extends React.Component {
@@ -47,8 +46,8 @@ export default class PaypalPayment extends React.Component {
     // Document on Paypal's currency code: https://developer.paypal.com/docs/classic/api/currency_codes/
 
     const client = {
-      sandbox: paypalAccount.sandbox,
-      production: paypalAccount.production
+      sandbox: process.env.REACT_APP_PAYPAL_ACCOUNT_SANDBOX,
+      production: process.env.REACT_APP_PAYPAL_ACCOUNT_PRODUCTION
     };
     // In order to get production's app-ID, you will have to send your app to Paypal for approval first
     // For sandbox app-ID (after logging into your developer account, please locate the "REST API apps" section, click "Create App"):

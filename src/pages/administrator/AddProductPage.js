@@ -103,16 +103,16 @@ class AddProductPage extends React.Component {
   render() {
     if (this.state.addProductStatus) return <Redirect to="/adminproducts" />;
     let imagesEl = "";
-    this.state.picture !== ""
-      ? (imagesEl = (
-          <img
-            src={this.state.picture}
-            alt={this.state["product-name"]}
-            width="500"
-            height="600"
-          />
-        ))
-      : imagesEl;
+    if(this.state.picture !== ""){
+      imagesEl = (
+        <img
+          src={this.state.picture}
+          alt={this.state["product-name"]}
+          width="500"
+          height="600"
+        />
+      )
+    }
     return (
       <Page className="DashboardPage container">
         <Row>

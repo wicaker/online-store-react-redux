@@ -90,7 +90,7 @@ class Header extends React.Component {
   handleSignOut = e => {
     e.preventDefault();
     this.props.logoutUser();
-    <Redirect to="/" />;
+    return <Redirect to="/" />;
   };
 
   handleClick = e => {
@@ -100,6 +100,7 @@ class Header extends React.Component {
   };
 
   render() {
+    const { isNotificationConfirmed } = this.state;
     if (this.state.isClick === true) return <Redirect to="/listbookings" />;
     let navbarHeaderRight = "";
     if (this.props.auth.isAuthenticated) {
@@ -204,7 +205,6 @@ class Header extends React.Component {
         </Nav>
       );
     }
-    const { isNotificationConfirmed } = this.state;
     return (
       <Navbar light expand className={bem.b("bg-white")}>
         <Nav navbar className="mr-2">

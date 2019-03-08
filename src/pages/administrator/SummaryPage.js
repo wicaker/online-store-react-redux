@@ -5,25 +5,18 @@ import { axiosInstance } from "../../config/api";
 import { connect } from "react-redux";
 import * as actionCreators from "../../store/actions/authActions";
 import {
-  Card,
-  CardBody,
-  CardHeader,
   Table,
   Row,
   Col,
   Button
 } from "reactstrap";
 
-import { Line } from "react-chartjs-2";
-
-import { chartjs } from "demos/dashboardPage";
 
 import SuccessPurchase from "./SuccessPurchase";
 import ReceivedPayment from "./ReceivedPayment";
 
 import Page from "components/Page";
 
-import { NumberWidget } from "components/Widget";
 
 class SummaryPage extends React.Component {
   state = {

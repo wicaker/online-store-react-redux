@@ -104,16 +104,16 @@ class EditProduct extends React.Component {
   render() {
     if (this.state.addProductStatus) return <Redirect to="/adminproducts" />;
     let imagesEl = "";
-    this.state.picture !== ""
-      ? (imagesEl = (
-          <img
-            src={this.state.picture}
-            alt={this.state["product-name"]}
-            width="300"
-            height="200"
-          />
-        ))
-      : imagesEl;
+    if(this.state.picture !== ""){
+      imagesEl = (
+        <img
+          src={this.state.picture}
+          alt={this.state["product-name"]}
+          width="300"
+          height="200"
+        />
+      )
+    }
     return (
       <Page className="DashboardPage container">
         <Row>
